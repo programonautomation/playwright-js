@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { login } from '../helpers/loginHelper';
+
 /**
  * Estos tests fueron generados con el comando: npx playwright codegen https://opensource-demo.orangehrmlive.com
  * esto abre una "grabadora de tc"

@@ -17,7 +17,7 @@ test('Validar flujo completo: Login, Búsqueda en PIM y Logout', async ({ page }
 
     // 4. Verificación (Assert)
     const registro = page.locator('.oxd-table-card');
-    await expect(registro.first()).toContainText('Charlie');
+    await expect(registro.first()).toContainText('Ramon');
 
     // 5. Bonus: Cerrar sesión para dejar el test limpio
     // await logout(page); 
