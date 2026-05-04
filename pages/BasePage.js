@@ -7,15 +7,18 @@ class BasePage {
     await this.page.goto(path);
   }
 
-  async click(locator) {
+  async click(locator) {    
+    await locator.waitFor({ state: 'visible' });
     await locator.click();
   }
 
   async fill(locator, value) {
+    await locator.waitFor({ state: 'visible' });
     await locator.fill(value);
   }
 
   async getText(locator) {
+    await locator.waitFor({ state: 'visible' });
     return await locator.innerText();
   }
 

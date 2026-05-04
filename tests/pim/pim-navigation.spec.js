@@ -1,13 +1,13 @@
 const { test } = require('@playwright/test');
-const LoginPage = require('../pages/LoginPage');
-const DashboardPage = require('../pages/DashboardPage');
-const PimPage = require('../pages/PimPage');
-const users = require('../data/users.json');
+const LoginPage = require('../../pages/LoginPage');
+const DashboardPage = require('../../pages/DashboardPage');
+const PimPage = require('../../pages/PimPage');
+const users = require('../../data/users.json'); // Ajusta el path si es necesario
 
-test.describe('PIM - OrangeHRM', () => {
+test.describe('PIM - Navegación y Estructura', () => {
+
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
-
     await loginPage.goToLogin();
     await loginPage.login(users.validUser.username, users.validUser.password);
   });
@@ -18,7 +18,6 @@ test.describe('PIM - OrangeHRM', () => {
 
     await dashboardPage.validateDashboardLoaded();
     await dashboardPage.openMenuOption('PIM');
-
     await pimPage.validatePimPageLoaded();
   });
 
@@ -28,7 +27,6 @@ test.describe('PIM - OrangeHRM', () => {
 
     await dashboardPage.validateDashboardLoaded();
     await dashboardPage.openMenuOption('PIM');
-
     await pimPage.validatePimPageLoaded();
     await pimPage.validatePimMainElements();
   });
