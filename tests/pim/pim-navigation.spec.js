@@ -22,7 +22,7 @@ test.describe('PIM - Navegación y Estructura', () => {
   });
 
   test('Validar elementos principales de la seccion PIM', async ({ page }) => {
-    const dashboardPage = new DashboardPage(page);
+    const dashboardPage = new DashboardPage(page); // ← agregar
     const pimPage = new PimPage(page);
 
     await dashboardPage.validateDashboardLoaded();

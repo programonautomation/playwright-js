@@ -1,35 +1,49 @@
 const { expect } = require('@playwright/test');
 const BasePage = require('./BasePage');
-const {PAGE_TITLES} = require('../constants/pimConstants');
 
 class PimConfigurationPage extends BasePage {
-  constructor(page) {
-    super(page);
-    this.title = page.getByRole('heading', { name: PAGE_TITLES.OPTIONAL_FIELDS });
-    this.saveButton = page.getByRole('button', { name: 'Save' });
-  }
-
-async validateTitle() {
-    await expect(this.title).toBeVisible({ timeout: 10000 }); 
-    await expect(this.title).toHaveText(PAGE_TITLES.OPTIONAL_FIELDS);
-}
-
-async toggleField(label) {
-    const switchWrapper = this.page.locator('.oxd-switch-wrapper', { hasText: label });
-    const switchInput = switchWrapper.locator('.oxd-switch-input');
-        
-    await expect(switchInput).toBeVisible();        
-    await switchInput.click({ force: true });
-}
-
-async toggleMultipleFields(labels) {
-    for (const label of labels) {        
-        const fieldContainer = this.page.locator('.oxd-checkbox-label', { hasText: label });        
-        const switchButton = fieldContainer.locator('span.oxd-switch-input');
-        
-        await switchButton.click();
+    constructor(page) {
+        super(page);
+        this.breadcrumbPim         = page.getByRole('heading', { name: 'PIM' });
+        this.breadcrumbConfig      = page.getByRole('heading', { name: '/ Configuration' });
+        this.optionalFieldsTitle   = page.getByText('Optional Fields');
+        this.deprecatedFieldsTitle = page.getByRole('heading', { name: 'Show Deprecated Fields' });
+        this.saveButton            = page.getByRole('button', { name: 'Save' });
     }
-}
+
+    switchWrapper(label) {
+        // Busca el generic que contiene exactamente el paragraph con ese texto
+        return this.page.locator('p', { hasText: label }).locator('..');
+    }
+
+    async validatePageTexts() {
+        await expect(this.optionalFieldsTitle).toBeVisible({ timeout: 10000 });
+        await expect(this.breadcrumbPim).toBeVisible();
+        await expect(this.breadcrumbConfig).toBeVisible();
+        await expect(this.deprecatedFieldsTitle).toBeVisible();
+        await expect(this.saveButton).toBeVisible();
+    }
+
+    async validateTitle() {
+        await expect(this.optionalFieldsTitle).toBeVisible({ timeout: 10000 });
+    }
+
+    async toggleField(label) {
+        const checkbox = this.page.locator('p', { hasText: label })
+            .locator('..')
+            .locator('input[type="checkbox"]');
+        await checkbox.click({ force: true });
+    }
+
+    async toggleMultipleFields(labels) {
+        for (const label of labels) {
+            await this.toggleField(label);
+        }
+    }
+
+    async saveConfiguration() {
+        await this.saveButton.click();
+    }
 }
 
 module.exports = PimConfigurationPage;

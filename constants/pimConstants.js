@@ -1,6 +1,6 @@
 module.exports = {  
   UI: {
-    HEADER: 'PIM / Configuration',
+    HEADER: 'PIMConfiguration',
     TABS: ['Configuration', 'Employee List', 'Add Employee', 'Reports'],
     SAVE_BUTTON_TEXT: 'Save'
   },

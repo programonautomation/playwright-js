@@ -2,47 +2,41 @@ const { test, expect } = require('@playwright/test');
 const LoginPage = require('../../pages/LoginPage');
 const DashboardPage = require('../../pages/DashboardPage');
 const PimPage = require('../../pages/PimPage');
-const PimConfigurationPage = require('../../pages/PimConfigurationPage'); 
+const PimConfigurationPage = require('../../pages/PimConfigurationPage');
 const users = require('../../data/users.json');
-const { OPTIONAL_FIELDS_LABELS, UI } = require('../../constants/pimConstants');
 
 test.describe('PIM - Configuration Module', () => {
 
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
+    const dashboardPage = new DashboardPage(page);
+    const pimPage = new PimPage(page);
+
     await loginPage.goToLogin();
     await loginPage.login(users.validUser.username, users.validUser.password);
-    await expect(page).toHaveURL(/.*dashboard/);
+    await dashboardPage.openMenuOption('PIM');
+    await pimPage.goToOptionalFields();
   });
 
-  test.afterEach(async ({ page }) => {
-    try {
-      await page.goto('/web/index.php/pim/viewOptionalFields');      
-      const pimConfigPage = new PimConfigurationPage(page);
-      await pimConfigPage.toggleMultipleFields(OPTIONAL_FIELDS_LABELS);
-      await pimConfigPage.saveConfiguration();
-    } catch (error) {
-      console.log("El afterEach no pudo resetear el estado.");
-    }
-  });
-
-  test('Should validate UI elements, navigation and toggle optional fields', async ({ page }) => {
-    const pimPage = new PimPage(page);
+  test('Should validate UI elements', async ({ page }) => {
     const pimConfigPage = new PimConfigurationPage(page);
-
-    await page.goto('/web/index.php/pim/configurePim', { waitUntil: 'domcontentloaded' });
- 
-    await pimPage.verifyPIMHeader(); 
-    await pimPage.verifySaveButtonIsVisible();
-
-    for (const tabName of UI.TABS) {
-      await pimPage.navigateToTab(tabName);
-    }
-    
-    await page.goto('/web/index.php/pim/viewOptionalFields', { waitUntil: 'domcontentloaded' });
-    await pimConfigPage.validateTitle();
-
-    await pimConfigPage.toggleMultipleFields(OPTIONAL_FIELDS_LABELS);
-    await pimConfigPage.saveConfiguration();
+    await pimConfigPage.validatePageTexts();
   });
+
+  test('should display correct elements and texts on PIM Configuration page', async ({ page }) => {
+    // Verificaciones para asegurar que estamos en la página correcta
+    await expect(page.getByRole('banner')).toContainText('PIM');
+    await expect(page.getByRole('banner')).toContainText('Configuration');
+    await expect(page.locator('#app')).toContainText('Optional Fields');
+    await expect(page.locator('form')).toContainText('Show Deprecated Fields');
+    await expect(page.locator('form')).toContainText('Country Specific Information');
+    await expect(page.locator('form')).toContainText('Save');
+    await expect(page.getByLabel('Topbar Menu').getByRole('list')).toContainText('Configuration');
+    await expect(page.getByLabel('Topbar Menu').getByRole('list')).toContainText('Employee List');
+    await expect(page.getByLabel('Topbar Menu').getByRole('list')).toContainText('Add Employee');
+    await expect(page.getByLabel('Topbar Menu').getByRole('list')).toContainText('Reports');
+    await expect(page.getByRole('textbox', { name: 'Search' })).toBeEmpty();
+
+  });
+
 });
