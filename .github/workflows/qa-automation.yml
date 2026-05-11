@@ -26,12 +26,6 @@ on:
         default: true
         type: boolean
 
-      run_java_tests:
-        description: "Ejecutar pruebas Java/Maven"
-        required: true
-        default: false
-        type: boolean
-
 permissions:
   contents: read
 
@@ -56,7 +50,6 @@ jobs:
           echo "Branch ejecutado: ${{ inputs.target_branch }}"
           echo "Browser: ${{ inputs.browser }}"
           echo "Run Playwright: ${{ inputs.run_playwright }}"
-          echo "Run Java tests: ${{ inputs.run_java_tests }}"
 
       - name: Configurar Java 17
         uses: actions/setup-java@v4
