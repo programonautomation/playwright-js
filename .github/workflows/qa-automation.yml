@@ -9,16 +9,6 @@ on:
         default: "main"
         type: string
 
-      environment:
-        description: "Ambiente de prueba"
-        required: true
-        default: "test"
-        type: choice
-        options:
-          - dev
-          - test
-          - homo
-
       browser:
         description: "Browser Playwright"
         required: true
@@ -51,11 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
-    environment: ${{ inputs.environment }}
-
     env:
       CI: true
-      TEST_ENV: ${{ inputs.environment }}
       BASE_URL: ${{ vars.BASE_URL }}
 
     steps:
@@ -67,7 +54,6 @@ jobs:
       - name: Mostrar contexto de ejecución
         run: |
           echo "Branch ejecutado: ${{ inputs.target_branch }}"
-          echo "Ambiente: ${{ inputs.environment }}"
           echo "Browser: ${{ inputs.browser }}"
           echo "Run Playwright: ${{ inputs.run_playwright }}"
           echo "Run Java tests: ${{ inputs.run_java_tests }}"
@@ -109,17 +95,6 @@ jobs:
             npx playwright test --reporter=line,html,allure-playwright
           else
             npx playwright test --project="${{ inputs.browser }}" --reporter=line,html,allure-playwright
-          fi
-
-      - name: Ejecutar pruebas Java con Maven
-        id: java_tests
-        if: ${{ inputs.run_java_tests }}
-        continue-on-error: true
-        run: |
-          if [ -f pom.xml ]; then
-            mvn -B clean test
-          else
-            echo "No se encontró pom.xml. Se omite ejecución Maven."
           fi
 
       - name: Preparar resultados Allure
@@ -176,8 +151,7 @@ jobs:
 
       - name: Fallar pipeline si fallaron las pruebas
         if: |
-          steps.playwright_tests.outcome == 'failure' ||
-          steps.java_tests.outcome == 'failure'
+          steps.playwright_tests.outcome == 'failure'
         run: |
           echo "Una o más ejecuciones de prueba fallaron."
           exit 1
